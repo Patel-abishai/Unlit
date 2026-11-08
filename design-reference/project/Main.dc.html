@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Unlit prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B5421E}a:hover{color:#8F3215}
+.app{--accent:#E8603C}
+.app.light{--bg:#FAF7F2;--card:#FFFFFF;--card2:#F2EDE5;--text:#1F1D1B;--muted:#655F58;--line:#E4DCD1;--accentText:#B5421E;--accentSoft:#FBE8E0;--chipOn:#1F1D1B;--chipOnText:#FAF7F2;--stageBg:#E8E2D9;--panel:#FFFFFF;--shadow:0 1px 2px rgba(60,40,20,.05),0 6px 20px rgba(60,40,20,.06)}
+.app.dark{--bg:#141312;--card:#201E1C;--card2:#2A2725;--text:#F3EEE7;--muted:#A9A197;--line:#36312D;--accentText:#F2906F;--accentSoft:#3A241C;--chipOn:#F3EEE7;--chipOnText:#141312;--stageBg:#0B0A09;--panel:#1B1917;--shadow:none}
+.calm{--bg:#1D1A18;--card:#2A2623;--card2:#34302B;--text:#F4EEE6;--muted:#B5AB9F;--line:#463F39;--chipOn:#F4EEE6;--chipOnText:#1D1A18;--accentText:#F2906F}
+.app *{box-sizing:border-box}
+.app button,.app input,.app textarea{font-family:inherit}
+.num{font-variant-numeric:tabular-nums}
+.scroll{scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.btn{border:0;cursor:pointer;font:inherit;color:inherit;background:none;padding:0;transition:transform .14s ease,opacity .14s ease,background-color .2s ease,border-color .2s ease;-webkit-tap-highlight-color:transparent;text-decoration:none}
+.btn:active{transform:scale(.97);opacity:.86}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:58px;border-radius:18px;background:var(--accent);color:#FFFFFF;font-size:19px;font-weight:700;letter-spacing:.1px}
+.primary.off{opacity:.38;pointer-events:none}
+.secondary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:54px;border-radius:16px;background:var(--card2);color:var(--text);font-size:17px;font-weight:700}
+.ghost{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;color:var(--text);font-size:16px;font-weight:600}
+.link{color:var(--accentText);font-weight:700;font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+.icon{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.chip{min-height:44px;padding:0 16px;border-radius:22px;background:var(--card);border:1.5px solid var(--line);color:var(--text);font-size:16px;font-weight:600;display:inline-flex;align-items:center}
+.chip.on{background:var(--chipOn);border-color:var(--chipOn);color:var(--chipOnText)}
+.opt{width:100%;min-height:64px;padding:14px 18px;border-radius:18px;background:var(--card);border:1.5px solid var(--line);display:flex;align-items:center;gap:14px;text-align:left;font-size:17px;font-weight:600;color:var(--text)}
+.opt.on{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
+.radio{width:22px;height:22px;flex:none;border-radius:11px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center}
+.opt.on .radio{border-color:var(--text)}
+.opt.on .radio::after{content:"";width:10px;height:10px;border-radius:5px;background:var(--text)}
+.card{background:var(--card);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+.soft{background:var(--card2);border-radius:20px;padding:16px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.h1{font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-.6px;margin:0}
+.h2{font-size:22px;line-height:1.25;font-weight:800;letter-spacing:-.3px;margin:0}
+.body{font-size:16px;line-height:1.5;color:var(--muted);margin:0}
+.row{width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:0 16px;text-align:left;font-size:16px;font-weight:600;color:var(--text)}
+.row + .row{border-top:1px solid var(--line)}
+.row .val{margin-left:auto;color:var(--muted);font-weight:500;font-size:15px}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--card2)}
+.seg .btn{height:40px;border-radius:10px;font-size:15px;font-weight:700;color:var(--muted)}
+.seg .btn.on{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
+.sw{width:52px;height:32px;border-radius:16px;background:var(--line);position:relative;flex:none;margin-left:auto}
+.sw .knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:13px;background:#FFFFFF;transition:left .2s ease}
+.sw.on{background:var(--text)}
+.sw.on .knob{left:23px;background:var(--bg)}
+.field{width:100%;height:54px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);color:var(--text);padding:0 16px;font-size:17px;font-weight:600;outline:none}
+.field:focus{border-color:var(--text)}
+textarea.field{height:96px;padding:14px 16px;resize:none;line-height:1.45;font-weight:500}
+.lbl{font-size:14px;font-weight:700;color:var(--muted);display:block;margin-bottom:8px}
+.crave{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:60px;border-radius:20px;background:var(--accent);color:#FFFFFF;font-size:20px;font-weight:800;letter-spacing:.2px;box-shadow:0 8px 22px rgba(232,96,60,.28)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:700;min-height:48px}
+.int{height:56px;border-radius:16px;background:var(--card);border:1.5px solid var(--line);font-size:20px;font-weight:800;color:var(--text)}
+.int.on{background:var(--chipOn);border-color:var(--chipOn);color:var(--chipOnText)}
+.bubble{max-width:286px;padding:12px 15px;border-radius:20px;font-size:16px;line-height:1.45;white-space:pre-line}
+.bubble.coach{background:var(--card);color:var(--text);border-bottom-left-radius:6px;box-shadow:var(--shadow)}
+.bubble.me{background:var(--chipOn);color:var(--chipOnText);border-bottom-right-radius:6px}
+.bubble.safe{background:var(--card);border:1.5px solid var(--line)}
+.meta{font-size:12px;color:var(--muted);font-weight:600;padding:0 6px}
+.qr{flex:none;min-height:40px;padding:0 14px;border-radius:20px;border:1.5px solid var(--line);background:var(--card);font-size:15px;font-weight:600;color:var(--text);white-space:nowrap}
+.dk{height:40px;border-radius:12px;background:var(--card2);font-size:14px;font-weight:700;color:var(--text);padding:0 10px;text-align:left}
+.dk.on{background:var(--chipOn);color:var(--chipOnText)}
+.scr{animation:scrIn .34s cubic-bezier(.2,.7,.2,1)}
+@keyframes scrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fade{animation:fadeIn .8s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.waveA{animation:waveX 8s linear infinite}
+.waveB{animation:waveX 13s linear infinite;opacity:.9}
+@keyframes waveX{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.bob{animation:bob 5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.breathe{animation:breathe 10s ease-in-out infinite}
+@keyframes breathe{0%{transform:scale(.58)}40%{transform:scale(1)}100%{transform:scale(.58)}}
+.pulse{animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(.92);opacity:.55}50%{transform:scale(1.05);opacity:1}}
+.paused .waveA,.paused .waveB,.paused .bob,.paused .breathe,.paused .pulse{animation-play-state:paused}
+.grow{animation:grow 2.4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes grow{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.toast{animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.d1,.d2,.d3{width:7px;height:7px;border-radius:4px;background:var(--muted);animation:dot 1.2s infinite}
+.d2{animation-delay:.15s}.d3{animation-delay:.3s}
+@keyframes dot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.ind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--text);opacity:.85;z-index:30;pointer-events:none}
+.ind.lt{background:#F4EEE6}
+</style>
+</helmet>
+
+<div class="app {{mode}}" style="width: 880px; height: 980px; padding: 52px 44px; display: flex; gap: 40px; align-items: flex-start; background: var(--stageBg); font-family: 'Manrope', system-ui, sans-serif; color: var(--text)">
+
+<div style="width: 417px; height: 876px; flex: none; padding: 12px; border-radius: 66px; background: #0E0D0C; box-shadow: 0 30px 60px rgba(40,25,10,.20), inset 0 0 0 2px #2E2A26">
+<div style="position: relative; width: 393px; height: 852px; border-radius: 54px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column">
+
+<div style="flex: 1; position: relative; min-height: 0">
+
+<!-- 1 WELCOME -->
+<sc-if value="{{s.welcome}}" hint-placeholder-val="{{true}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 24px 40px; background: var(--bg)">
+  <div style="display: flex; align-items: center; gap: 10px; height: 48px">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="13" cy="13" r="4" fill="#E8603C"></circle></svg>
+    <span style="font-size: 22px; font-weight: 800; letter-spacing: -.4px">Unlit</span>
+  </div>
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px">
+    <div class="card" style="padding: 22px 20px">
+      <svg width="100%" height="120" viewBox="0 0 305 120" aria-hidden="true">
+        <path d="M10 92 C70 92 80 40 150 40 S240 70 295 28" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"></path>
+        <circle cx="10" cy="92" r="6" fill="currentColor" fill-opacity=".85"></circle>
+        <circle cx="150" cy="40" r="5" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-width="2"></circle>
+        <circle cx="295" cy="28" r="9" fill="#E8603C"></circle>
+        <text x="10" y="116" font-size="12" font-weight="700" fill="currentColor" fill-opacity=".6" font-family="Manrope, sans-serif">Day 1</text>
+        <text x="128" y="68" font-size="12" font-weight="700" fill="currentColor" fill-opacity=".6" font-family="Manrope, sans-serif">Quit day</text>
+        <text x="252" y="60" font-size="12" font-weight="700" fill="currentColor" fill-opacity=".6" font-family="Manrope, sans-serif">Day 42</text>
+      </svg>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 14px">
+      <h1 class="h1" style="font-size: 34px">Quit smoking with a coach that's there when cravings hit.</h1>
+      <p class="body" style="font-size: 17px">A calm 42-day plan built on Acceptance and Commitment Therapy. No lectures, no streaks to lose.</p>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <button class="btn primary" onClick="{{startOnboarding}}">Get started</button>
+    <button class="btn ghost" onClick="{{toSignin}}">I already have an account</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- SIGN IN -->
+<sc-if value="{{s.signin}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+  <div style="flex: 1; padding: 16px 24px; display: flex; flex-direction: column; gap: 22px">
+    <h1 class="h1">Welcome back.</h1>
+    <p class="body">Enter your phone number and we'll pick up where you left off. Your progress is saved.</p>
+    <div><label class="lbl" for="signinPhone">Phone number</label><input id="signinPhone" class="field num" value="+91 98450 61207" readOnly="{{true}}"></div>
+  </div>
+  <div style="padding: 0 24px"><button class="btn primary" onClick="{{signIn}}">Continue</button></div>
+</div>
+</sc-if>
+
+<!-- 2 QUIZ -->
+<sc-if value="{{s.quiz}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 20px 0 8px; height: 48px; display: flex; align-items: center; gap: 8px">
+    <button class="btn icon" aria-label="Back" onClick="{{quizBack}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+    <div style="flex: 1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+      <sc-for list="{{qBars}}" as="b" hint-placeholder-count="5"><div style="height: 6px; border-radius: 3px; background: {{b.bg}}; transition: background-color .3s"></div></sc-for>
+    </div>
+    <span class="num" style="font-size: 14px; font-weight: 700; color: var(--muted); width: 44px; text-align: right">{{qLabel}}</span>
+  </div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 24px 24px 16px">
+
+    <sc-if value="{{q.s0}}" hint-placeholder-val="{{true}}">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 14px">
+      <h1 class="h1">How many cigarettes a day?</h1>
+      <p class="body">A rough average is fine.</p>
+      <div class="card" style="margin-top: 18px; padding: 26px 20px; display: flex; flex-direction: column; align-items: center; gap: 18px">
+        <div class="num" style="font-size: 76px; font-weight: 800; letter-spacing: -2px; line-height: 1">{{cigs}}</div>
+        <div style="font-size: 15px; font-weight: 600; color: var(--muted)">{{cigsNote}}</div>
+        <label for="cigSlider" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Cigarettes per day</label>
+        <input id="cigSlider" type="range" min="1" max="40" value="{{cigs}}" onChange="{{onCigs}}" style="width: 100%; height: 44px; accent-color: #E8603C">
+        <div style="width: 100%; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--muted)"><span>1</span><span>20</span><span>40</span></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{q.s1}}" hint-placeholder-val="{{false}}">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 14px">
+      <h1 class="h1">How many years have you smoked?</h1>
+      <p class="body">{{yearsNote}}</p>
+      <div class="card" style="margin-top: 18px; padding: 28px 20px; display: flex; align-items: center; justify-content: space-between">
+        <button class="btn icon" aria-label="Fewer years" onClick="{{yearsDown}}" style="width: 56px; height: 56px; border-radius: 28px; background: var(--card2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+        <div style="text-align: center"><div class="num" style="font-size: 72px; font-weight: 800; letter-spacing: -2px; line-height: 1">{{years}}</div><div style="font-size: 15px; font-weight: 600; color: var(--muted); margin-top: 6px">years</div></div>
+        <button class="btn icon" aria-label="More years" onClick="{{yearsUp}}" style="width: 56px; height: 56px; border-radius: 28px; background: var(--card2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{q.s2}}" hint-placeholder-val="{{false}}">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 14px">
+      <h1 class="h1">When do you usually smoke?</h1>
+      <p class="body">Pick all that apply. Your coach will check in before these moments.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px">
+        <sc-for list="{{quizTrig}}" as="c" hint-placeholder-count="8"><button class="btn chip {{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{q.s3}}" hint-placeholder-val="{{false}}">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 14px">
+      <h1 class="h1">Have you tried to quit before?</h1>
+      <p class="body">No judgment here. It helps us shape your plan.</p>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px">
+        <sc-for list="{{attemptOpts}}" as="o" hint-placeholder-count="3"><button class="btn opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}"><span class="radio"></span>{{o.label}}</button></sc-for>
+      </div>
+      <div class="soft" style="font-size: 15px; line-height: 1.5; color: var(--muted)">Most people who quit for good tried a few times first. Every attempt taught them something.</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{q.s4}}" hint-placeholder-val="{{false}}">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 14px">
+      <h1 class="h1">What's your main reason to quit?</h1>
+      <p class="body">We'll bring it back to you when it counts.</p>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px">
+        <sc-for list="{{reasonOpts}}" as="o" hint-placeholder-count="5"><button class="btn opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}"><span class="radio"></span>{{o.label}}</button></sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+  <div style="padding: 8px 24px 0"><button class="btn primary" onClick="{{quizNext}}">{{quizCta}}</button></div>
+</div>
+</sc-if>
+
+<!-- 3 PLAN -->
+<sc-if value="{{s.plan}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 24px 20px; display: flex; flex-direction: column; gap: 18px">
+    <div class="eyebrow">Ready, Rahul</div>
+    <h1 class="h1">Your 42-day plan.</h1>
+    <p class="body">{{planIntro}}</p>
+    <div class="card" style="display: flex; flex-direction: column; gap: 0; padding: 20px">
+      <div style="display: flex; gap: 14px">
+        <div style="display: flex; flex-direction: column; align-items: center"><div style="width: 14px; height: 14px; border-radius: 7px; background: var(--text); margin-top: 4px"></div><div style="width: 2px; flex: 1; background: var(--line); margin: 4px 0"></div></div>
+        <div style="padding-bottom: 18px"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Days 1 to 14</div><div style="font-size: 18px; font-weight: 800; margin-top: 2px">Prepare</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 4px">Keep smoking, but log each one. Learn your triggers and practise the craving tools.</div></div>
+      </div>
+      <div style="display: flex; gap: 14px">
+        <div style="display: flex; flex-direction: column; align-items: center"><div style="width: 14px; height: 14px; border-radius: 7px; background: #E8603C; margin-top: 4px"></div><div style="width: 2px; flex: 1; background: var(--line); margin: 4px 0"></div></div>
+        <div style="padding-bottom: 18px"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Day 15 · {{quitDate}}</div><div style="font-size: 18px; font-weight: 800; margin-top: 2px">Quit day</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 4px">A short, quiet ceremony. Your last cigarette.</div></div>
+      </div>
+      <div style="display: flex; gap: 14px">
+        <div style="display: flex; flex-direction: column; align-items: center"><div style="width: 14px; height: 14px; border-radius: 7px; border: 2.5px solid var(--text); margin-top: 4px"></div></div>
+        <div><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Days 15 to 42</div><div style="font-size: 18px; font-weight: 800; margin-top: 2px">Protect</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 4px">Check-ins timed to your hardest moments. Craving help any time, day or night.</div></div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <div class="soft"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Quit day</div><div style="font-size: 19px; font-weight: 800; margin-top: 4px">{{quitDate}}</div></div>
+      <div class="soft"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Day 42</div><div style="font-size: 19px; font-weight: 800; margin-top: 4px">{{day42Date}}</div></div>
+    </div>
+    <div class="card" style="display: flex; flex-direction: column; gap: 4px">
+      <div style="font-size: 14px; font-weight: 700; color: var(--muted)">Saved by day 42</div>
+      <div class="num" style="font-size: 36px; font-weight: 800; letter-spacing: -1px">₹{{saved42}}</div>
+      <div style="font-size: 15px; color: var(--muted); font-weight: 600">About ${{saved42usd}} · at ₹18 a cigarette</div>
+    </div>
+  </div>
+  <div style="padding: 8px 24px 0"><button class="btn primary" onClick="{{toMeds}}">Start my plan</button></div>
+</div>
+</sc-if>
+
+<!-- 4 MEDICATION -->
+<sc-if value="{{s.meds}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 24px 20px; display: flex; flex-direction: column; gap: 16px">
+    <h1 class="h1">Your best odds: coach + medication.</h1>
+    <p class="body">Medication handles the physical withdrawal. Your coach handles the habit. Together they work better than either alone.</p>
+    <div class="card" style="padding: 4px 0">
+      <div style="padding: 14px 18px"><div style="font-size: 17px; font-weight: 800">Nicotine patch</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 3px">A steady, low level of nicotine through the day. Takes the edge off withdrawal.</div></div>
+      <div style="padding: 14px 18px; border-top: 1px solid var(--line)"><div style="font-size: 17px; font-weight: 800">Gum and lozenges</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 3px">Quick relief when a craving hits suddenly. Often used alongside a patch.</div></div>
+      <div style="padding: 14px 18px; border-top: 1px solid var(--line)"><div style="font-size: 17px; font-weight: 800">Prescription options</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 3px">Tablets a doctor can prescribe that reduce cravings and withdrawal, such as varenicline or bupropion.</div></div>
+    </div>
+    <div class="soft" style="display: flex; gap: 12px; align-items: flex-start">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"></path></svg>
+      <div style="font-size: 15px; line-height: 1.5; font-weight: 600">Talk to a pharmacist or doctor before starting. We never give dosing advice.</div>
+    </div>
+    <div style="font-size: 17px; font-weight: 800; margin-top: 6px">What feels right for you?</div>
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{medOpts}}" as="o" hint-placeholder-count="3"><button class="btn opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}"><span class="radio"></span>{{o.label}}</button></sc-for>
+    </div>
+  </div>
+  <div style="padding: 8px 24px 0"><button class="btn primary {{medCtaCls}}" onClick="{{medNext}}">{{medCta}}</button></div>
+</div>
+</sc-if>
+
+<!-- 5 BUDDY -->
+<sc-if value="{{s.buddy}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 24px 20px; display: flex; flex-direction: column; gap: 16px">
+    <h1 class="h1">Quitting with someone doubles the support.</h1>
+    <p class="body">Pick one person. They get milestone updates only. Never your logs, cravings or slips.</p>
+    <div><label class="lbl" for="buddyName">Their name</label><input id="buddyName" class="field" value="{{buddyName}}" onChange="{{onBuddyName}}"></div>
+    <div><label class="lbl" for="buddyPhone">Phone number</label><div style="display: flex; gap: 8px"><div class="field num" style="width: 76px; display: flex; align-items: center; justify-content: center; flex: none">+91</div><input id="buddyPhone" class="field num" value="{{buddyPhone}}" onChange="{{onBuddyPhone}}"></div></div>
+    <div class="soft" style="display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 13px; font-weight: 700; color: var(--muted)">What {{buddyFirst}} will get on day 7</div>
+      <div class="bubble coach" style="max-width: none; font-size: 15px">Rahul just hit 7 days smoke-free with Unlit. A quick message from you would mean a lot.</div>
+    </div>
+  </div>
+  <div style="padding: 8px 24px 0; display: flex; flex-direction: column; gap: 6px">
+    <button class="btn primary" onClick="{{buddyInvite}}">{{buddyCta}}</button>
+    <button class="btn ghost" onClick="{{buddySkip}}">{{buddySkipLabel}}</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- 6 PAYWALL -->
+<sc-if value="{{s.paywall}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 34px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 24px 16px; display: flex; flex-direction: column; gap: 18px">
+    <h1 class="h1">Start with 7 days free.</h1>
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <sc-for list="{{benefits}}" as="b" hint-placeholder-count="4">
+      <div style="display: flex; gap: 12px; align-items: flex-start">
+        <div style="width: 26px; height: 26px; border-radius: 13px; background: var(--card2); display: flex; align-items: center; justify-content: center; flex: none"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></div>
+        <div style="font-size: 16px; line-height: 1.45; font-weight: 600">{{b}}</div>
+      </div>
+      </sc-for>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <button class="btn opt {{payA}}" aria-pressed="{{payAP}}" onClick="{{pickAnnual}}" style="position: relative; padding: 18px">
+        <span class="radio"></span>
+        <span style="flex: 1"><span style="display: block; font-size: 17px; font-weight: 800">Yearly</span><span style="display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px">$5.00 a month, billed yearly</span></span>
+        <span class="num" style="font-size: 18px; font-weight: 800">$59.99</span>
+        <span style="position: absolute; top: -11px; right: 16px; background: #E8603C; color: #FFFFFF; font-size: 12px; font-weight: 800; letter-spacing: .4px; padding: 4px 10px; border-radius: 10px">BEST VALUE</span>
+      </button>
+      <button class="btn opt {{payM}}" aria-pressed="{{payMP}}" onClick="{{pickMonthly}}" style="padding: 18px">
+        <span class="radio"></span>
+        <span style="flex: 1"><span style="display: block; font-size: 17px; font-weight: 800">Monthly</span><span style="display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px">Cancel anytime</span></span>
+        <span class="num" style="font-size: 18px; font-weight: 800">$9.99</span>
+      </button>
+    </div>
+    <p style="margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); text-align: center">{{payFine}}</p>
+  </div>
+  <div style="padding: 8px 24px 0; display: flex; flex-direction: column; align-items: center; gap: 2px">
+    <button class="btn primary" onClick="{{startTrial}}">{{payCta}}</button>
+    <button class="btn link" onClick="{{restore}}" style="font-size: 14px; color: var(--muted)">Restore purchase</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- 7 / 13 HOME -->
+<sc-if value="{{s.home}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: 59px; background: var(--bg)">
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0 4px">
+      <div><div style="font-size: 14px; font-weight: 700; color: var(--muted)">Thursday, 5 November</div><div style="font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin-top: 2px">Good afternoon, Rahul</div></div>
+      <button class="btn icon" aria-label="Profile" onClick="{{tabSettings}}" style="background: var(--card2); font-weight: 800; font-size: 16px">R</button>
+    </div>
+
+    <sc-if value="{{prep}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; flex-direction: column; gap: 14px">
+      <div class="card" style="display: flex; flex-direction: column; align-items: center; padding: 22px 18px 20px; gap: 14px">
+        <div style="position: relative; width: 196px; height: 196px">
+          <svg width="196" height="196" viewBox="0 0 196 196" aria-hidden="true" style="transform: rotate(-90deg)"><circle cx="98" cy="98" r="84" fill="none" stroke="var(--card2)" stroke-width="12"></circle><circle cx="98" cy="98" r="84" fill="none" stroke="var(--text)" stroke-width="12" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="{{ringOffset}}"></circle></svg>
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center"><div class="num" style="font-size: 64px; font-weight: 800; letter-spacing: -2px; line-height: 1">9</div><div style="font-size: 14px; font-weight: 700; color: var(--muted); text-align: center; margin-top: 4px">days until<br>quit day</div></div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 700"><span style="padding: 6px 12px; border-radius: 12px; background: var(--chipOn); color: var(--chipOnText)">Prepare</span><span style="color: var(--muted)">Day 6 of 14</span></div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; gap: 12px">
+        <div class="eyebrow">Today's task</div>
+        <div style="font-size: 19px; font-weight: 800; line-height: 1.3">Log every cigarette today and what triggered it.</div>
+        <div style="font-size: 15px; line-height: 1.45; color: var(--muted)"><span class="num" style="font-weight: 800; color: var(--text)">{{logs}} logged</span> so far. Your coach is spotting a pattern around coffee.</div>
+        <button class="btn secondary" onClick="{{toLog}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Log a cigarette</button>
+      </div>
+      <button class="btn card" onClick="{{tabCoach}}" style="display: flex; align-items: center; gap: 14px; text-align: left; width: 100%">
+        <div style="width: 44px; height: 44px; border-radius: 22px; background: var(--card2); display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+        <div style="flex: 1"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Next check-in · 6:30 pm</div><div style="font-size: 16px; font-weight: 700; line-height: 1.35; margin-top: 2px">Your drive home is your second-hardest time.</div></div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg>
+      </button>
+      <button class="btn soft" onClick="{{toQuitDay}}" style="display: flex; align-items: center; gap: 14px; text-align: left; width: 100%">
+        <div style="flex: 1"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Day 15</div><div style="font-size: 16px; font-weight: 700; margin-top: 2px">Preview your quit day</div></div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg>
+      </button>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{prot}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-direction: column; gap: 14px">
+      <div class="card" style="padding: 22px 20px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700"><span style="padding: 6px 12px; border-radius: 12px; background: var(--chipOn); color: var(--chipOnText)">Protect</span><span style="color: var(--muted)">Day 25 of 42</span></div>
+        <div style="display: flex; align-items: baseline; gap: 10px"><span class="num" style="font-size: 84px; font-weight: 800; letter-spacing: -3px; line-height: 1">11</span><span style="font-size: 20px; font-weight: 800; line-height: 1.2">days<br>smoke-free</span></div>
+        <div style="height: 8px; border-radius: 4px; background: var(--card2); overflow: hidden"><div style="width: 39%; height: 100%; border-radius: 4px; background: var(--text)"></div></div>
+        <div style="font-size: 14px; font-weight: 600; color: var(--muted)">17 days to day 42</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <div class="card" style="padding: 16px"><div class="num" style="font-size: 30px; font-weight: 800; letter-spacing: -1px">{{notSmoked}}</div><div style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px">cigarettes not smoked</div></div>
+        <div class="card" style="padding: 16px"><div class="num" style="font-size: 30px; font-weight: 800; letter-spacing: -1px">₹{{savedNow}}</div><div style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px">saved · about ${{savedNowUsd}}</div></div>
+      </div>
+      <div class="card" style="display: flex; gap: 14px; align-items: flex-start">
+        <div style="width: 44px; height: 44px; border-radius: 22px; background: var(--accentSoft); color: var(--accentText); display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"></path></svg></div>
+        <div><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Health milestone</div><div style="font-size: 17px; font-weight: 800; line-height: 1.35; margin-top: 2px">Your carbon monoxide levels are back to normal.</div><div style="font-size: 15px; line-height: 1.45; color: var(--muted); margin-top: 6px">Your blood carries oxygen more easily now. Breathing keeps improving over the coming weeks.</div></div>
+      </div>
+      <button class="btn card" onClick="{{tabCoach}}" style="display: flex; align-items: center; gap: 14px; text-align: left; width: 100%">
+        <div style="width: 44px; height: 44px; border-radius: 22px; background: var(--card2); display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+        <div style="flex: 1"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Next check-in</div><div style="font-size: 16px; font-weight: 700; margin-top: 2px">Today, 6:30 pm, before your drive</div></div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg>
+      </button>
+      <button class="btn ghost" onClick="{{toSlip}}" style="color: var(--muted); font-size: 15px">I had a cigarette</button>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<!-- 8 LOG -->
+<sc-if value="{{s.log}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center; gap: 4px"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><span style="font-size: 17px; font-weight: 800">Log a cigarette</span><span class="num" style="margin-left: auto; padding-right: 16px; font-size: 14px; font-weight: 700; color: var(--muted)">Now · 2:14 pm</span></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 12px 24px 20px; display: flex; flex-direction: column; gap: 22px">
+    <sc-if value="{{logFromCraving}}" hint-placeholder-val="{{false}}"><div class="soft" style="font-size: 15px; line-height: 1.5; font-weight: 600">That's okay. You're still in Prepare, so smoking is part of the plan for now. Logging it is the work.</div></sc-if>
+    <div>
+      <div style="font-size: 19px; font-weight: 800; margin-bottom: 12px">What triggered it?</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px"><sc-for list="{{logTrig}}" as="c" hint-placeholder-count="8"><button class="btn chip {{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+    </div>
+    <div>
+      <div style="font-size: 19px; font-weight: 800; margin-bottom: 12px">How much did you want it?</div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px"><sc-for list="{{logInts}}" as="i" hint-placeholder-count="5"><button class="btn int {{i.cls}}" aria-pressed="{{i.pressed}}" aria-label="Intensity {{i.n}}" onClick="{{i.pick}}">{{i.n}}</button></sc-for></div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 8px"><span>Barely</span><span>Badly</span></div>
+    </div>
+    <div><label class="lbl" for="logNote">Note (optional)</label><textarea id="logNote" class="field" placeholder="Where were you? Who with?" value="{{logNote}}" onChange="{{onLogNote}}"></textarea></div>
+  </div>
+  <div style="padding: 8px 24px 0"><button class="btn primary" onClick="{{saveLog}}">Save</button></div>
+</div>
+</sc-if>
+
+<!-- 9 CRAVING -->
+<sc-if value="{{s.craving}}" hint-placeholder-val="{{false}}">
+<div class="scr calm {{pausedCls}}" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg); color: var(--text)">
+  <div style="padding: 0 8px 0 20px; height: 48px; display: flex; align-items: center; justify-content: space-between">
+    <span style="font-size: 15px; font-weight: 700; color: var(--muted)">{{cvTitle}}</span>
+    <button class="btn icon" aria-label="Close" onClick="{{closeCraving}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>
+  </div>
+
+  <sc-if value="{{cv.intro}}" hint-placeholder-val="{{true}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; padding: 0 28px">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 36px">
+      <div style="position: relative; width: 150px; height: 150px; align-self: center">
+        <div class="pulse" style="position: absolute; inset: 0; border-radius: 75px; background: rgba(232,96,60,.16)"></div>
+        <div style="position: absolute; inset: 38px; border-radius: 37px; background: rgba(232,96,60,.45)"></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <h1 class="h1" style="font-size: 32px">This will pass in a few minutes.</h1>
+        <p class="body" style="font-size: 19px; color: var(--text); opacity: .8">Let's ride it out together.</p>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><button class="btn primary" onClick="{{cvToRate}}">I'm ready</button><button class="btn ghost" onClick="{{closeCraving}}" style="color: var(--muted)">Not now</button></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{cv.rate}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; min-height: 0">
+    <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 26px">
+      <div>
+        <h2 class="h2" style="margin-bottom: 14px">How strong is it?</h2>
+        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px"><sc-for list="{{cvInts}}" as="i" hint-placeholder-count="5"><button class="btn int {{i.cls}}" aria-pressed="{{i.pressed}}" aria-label="Strength {{i.n}}" onClick="{{i.pick}}">{{i.n}}</button></sc-for></div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 8px"><span>Mild</span><span>Overwhelming</span></div>
+      </div>
+      <div>
+        <h2 class="h2" style="margin-bottom: 14px">What's happening?</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px"><sc-for list="{{cvTrig}}" as="c" hint-placeholder-count="8"><button class="btn chip {{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+      </div>
+    </div>
+    <div style="padding: 8px 24px 0"><button class="btn primary" onClick="{{cvToSuggest}}">Continue</button></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{cv.suggest}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; min-height: 0">
+    <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 18px">
+      <div style="font-size: 15px; font-weight: 700; color: var(--muted)">Your coach suggests</div>
+      <div class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 22px">
+        <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 24px; font-weight: 800; letter-spacing: -.3px">{{sug.title}}</span><span class="num" style="font-size: 14px; font-weight: 700; color: var(--muted)">{{sug.len}}</span></div>
+        <div style="font-size: 16px; line-height: 1.5; color: var(--muted)">{{sug.why}}</div>
+      </div>
+      <button class="btn primary" onClick="{{sug.start}}">Start {{sug.lower}}</button>
+      <div style="font-size: 15px; font-weight: 700; color: var(--muted); margin-top: 8px">Or try something else</div>
+      <div class="card" style="padding: 0; overflow: hidden">
+        <sc-for list="{{others}}" as="o" hint-placeholder-count="4"><button class="btn row" onClick="{{o.start}}" style="min-height: 64px"><span style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">{{o.title}}</span><span style="font-size: 14px; font-weight: 500; color: var(--muted)">{{o.short}}</span></span><span class="val num">{{o.len}}</span></button></sc-for>
+      </div>
+      <button class="btn ghost" onClick="{{cvToCoach}}">Talk to my coach instead</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{cv.play}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative">
+    <div style="padding: 4px 28px 0; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; z-index: 2">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted)">{{phaseLabel}}</div>
+      <div class="num" style="font-size: 60px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.05">{{remaining}}</div>
+      <div style="position: relative; width: 100%; height: 108px; margin-top: 12px">
+        <sc-for list="{{lines}}" as="l" hint-placeholder-count="1"><p style="position: absolute; inset: 0; margin: 0; text-align: center; font-size: 20px; line-height: 1.45; font-weight: 600; opacity: {{l.op}}; transition: opacity 1.2s ease">{{l.t}}</p></sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{exSurf}}" hint-placeholder-val="{{true}}">
+    <div style="position: absolute; left: 0; right: 0; bottom: 0; top: 230px; overflow: hidden; z-index: 1">
+      <div style="position: absolute; left: 0; right: 0; top: 0; height: 640px; transform: translateY({{waveY}}px); transition: transform 1s linear">
+        <div class="bob" style="position: absolute; inset: 0">
+          <svg class="waveB" viewBox="0 0 800 640" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; top: 10px; left: 0; width: 200%; height: 640px"><path d="M0 70 Q100 38 200 70 T400 70 T600 70 T800 70 V640 H0 Z" fill="rgba(244,238,230,.07)"></path></svg>
+          <svg class="waveA" viewBox="0 0 800 640" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 200%; height: 640px"><path d="M0 60 Q100 22 200 60 T400 60 T600 60 T800 60 V640 H0 Z" fill="rgba(232,96,60,.20)"></path><path d="M0 60 Q100 22 200 60 T400 60 T600 60 T800 60" fill="none" stroke="#E8603C" stroke-opacity=".75" stroke-width="2.5"></path></svg>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{exBreath}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1">
+      <div style="position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center">
+        <div style="position: absolute; inset: 0; border-radius: 120px; border: 1.5px dashed var(--line)"></div>
+        <div class="breathe" style="position: absolute; inset: 0; border-radius: 120px; background: rgba(232,96,60,.28)"></div>
+        <div style="position: relative; font-size: 20px; font-weight: 800">{{breathCue}}</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{exOther}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1">
+      <div style="position: relative; width: 230px; height: 230px">
+        <svg width="230" height="230" viewBox="0 0 230 230" aria-hidden="true" style="transform: rotate(-90deg)"><circle cx="115" cy="115" r="100" fill="none" stroke="var(--card2)" stroke-width="8"></circle><circle cx="115" cy="115" r="100" fill="none" stroke="#E8603C" stroke-width="8" stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="{{exOffset}}" style="transition: stroke-dashoffset 1s linear"></circle></svg>
+        <div class="pulse" style="position: absolute; inset: 52px; border-radius: 63px; background: rgba(244,238,230,.08)"></div>
+        <sc-if value="{{exValues}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Your reason</div><div style="font-size: 22px; font-weight: 800; margin-top: 2px">{{reasonLabel}}</div></div></sc-if>
+      </div>
+    </div>
+    </sc-if>
+
+    <div style="margin-top: auto; padding: 16px 24px 0; display: flex; gap: 10px; position: relative; z-index: 2">
+      <button class="btn secondary" onClick="{{togglePause}}" style="flex: 1">{{pauseLabel}}</button>
+      <button class="btn secondary" onClick="{{exDone}}" style="flex: 1">I'm done</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{cv.end}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; padding: 0 24px">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px">
+      <h1 class="h1">Did the craving pass?</h1>
+      <p class="body">Whatever the answer, you just spent {{spent}} paying attention instead of acting on autopilot.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <button class="btn primary" onClick="{{endPassed}}">Yes, it passed</button>
+      <button class="btn secondary" onClick="{{endStrong}}">Still strong</button>
+      <button class="btn ghost" onClick="{{endSmoked}}" style="color: var(--muted)">I smoked</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{cv.more}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; min-height: 0">
+    <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 16px">
+      <h1 class="h1">Some cravings come in a second wave.</h1>
+      <p class="body">That's normal and it doesn't mean the first try failed. Let's do one more, or talk it through.</p>
+      <div class="card" style="padding: 0; overflow: hidden; margin-top: 6px">
+        <sc-for list="{{moreList}}" as="o" hint-placeholder-count="4"><button class="btn row" onClick="{{o.start}}" style="min-height: 64px"><span style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">{{o.title}}</span><span style="font-size: 14px; font-weight: 500; color: var(--muted)">{{o.short}}</span></span><span class="val num">{{o.len}}</span></button></sc-for>
+      </div>
+    </div>
+    <div style="padding: 8px 24px 0"><button class="btn primary" onClick="{{cvToCoach}}">Chat with my coach</button></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{cv.passed}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; padding: 0 24px">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px">
+      <div class="grow" style="width: 84px; height: 84px; border-radius: 42px; background: rgba(232,96,60,.2); display: flex; align-items: center; justify-content: center; color: #F2906F"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></div>
+      <h1 class="h1">You rode it out.</h1>
+      <p class="body" style="font-size: 17px">That's <span class="num" style="color: var(--text); font-weight: 800">{{handled}}</span> cravings handled without smoking. Each one teaches your brain the next will pass too.</p>
+    </div>
+    <button class="btn primary" onClick="{{tabHome}}">Back to home</button>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- 10 SLIP -->
+<sc-if value="{{s.slip}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{slipBack}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+
+  <sc-if value="{{slipAsk}}" hint-placeholder-val="{{true}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; min-height: 0">
+    <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 24px 16px; display: flex; flex-direction: column; gap: 16px">
+      <h1 class="h1">A slip isn't a restart.</h1>
+      <p class="body" style="font-size: 17px">Your 11 smoke-free days still count. One cigarette doesn't erase them.</p>
+      <div class="card" style="display: flex; align-items: center; gap: 14px">
+        <div class="num" style="font-size: 40px; font-weight: 800; letter-spacing: -1px">11</div>
+        <div style="font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--muted)">smoke-free days kept.<br>Your progress is not reset.</div>
+      </div>
+      <h2 class="h2" style="margin-top: 10px">What happened?</h2>
+      <div style="display: flex; flex-direction: column; gap: 10px"><sc-for list="{{slipOpts}}" as="o" hint-placeholder-count="6"><button class="btn opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="min-height: 56px"><span class="radio"></span>{{o.label}}</button></sc-for></div>
+    </div>
+    <div style="padding: 8px 24px 0"><button class="btn primary" onClick="{{slipToPlan}}">Make a plan for next time</button></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{slipPlan}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; min-height: 0">
+    <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 24px 16px; display: flex; flex-direction: column; gap: 16px">
+      <div class="eyebrow">{{slipWhyLabel}}</div>
+      <h1 class="h1">Next time, here's the plan.</h1>
+      <div class="card" style="padding: 6px 18px">
+        <sc-for list="{{slipSteps}}" as="p" hint-placeholder-count="3">
+        <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line)">
+          <div class="num" style="width: 28px; height: 28px; border-radius: 14px; background: var(--card2); font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">{{p.n}}</div>
+          <div style="font-size: 16px; line-height: 1.45; font-weight: 600">{{p.t}}</div>
+        </div>
+        </sc-for>
+      </div>
+      <p class="body">Your coach will check in tonight to see how you're doing. Day 12 starts tomorrow, same as it would have.</p>
+    </div>
+    <div style="padding: 8px 24px 0; display: flex; flex-direction: column; gap: 6px"><button class="btn primary" onClick="{{saveSlipPlan}}">Save my plan</button><button class="btn ghost" onClick="{{slipToCoach}}">Talk it through with my coach</button></div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- 11 COACH -->
+<sc-if value="{{s.coach}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: 59px; background: var(--bg)">
+  <div style="padding: 0 20px; height: 56px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line)">
+    <div style="width: 38px; height: 38px; border-radius: 19px; background: var(--card2); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="10" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="13" cy="13" r="4" fill="#E8603C"></circle></svg></div>
+    <div><div style="font-size: 17px; font-weight: 800">Your coach</div><div style="font-size: 13px; font-weight: 600; color: var(--muted)">Here any time · no dosing advice</div></div>
+  </div>
+  <div class="scroll" ref="{{chatRef}}" style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 12px">
+    <div style="align-self: center; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .4px">TODAY</div>
+    <sc-for list="{{msgs}}" as="m" hint-placeholder-count="6">
+    <div style="display: flex; flex-direction: column; align-items: {{m.align}}; gap: 4px">
+      <sc-if value="{{m.safety}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; letter-spacing: .3px; color: var(--muted); padding: 0 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"></path></svg>SAFETY · NO DOSING ADVICE</div></sc-if>
+      <div class="bubble {{m.cls}}">{{m.text}}</div>
+      <div class="meta num">{{m.time}}</div>
+    </div>
+    </sc-for>
+    <sc-if value="{{typing}}" hint-placeholder-val="{{false}}"><div class="bubble coach" style="display: flex; gap: 5px; align-self: flex-start; padding: 15px 16px"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div></sc-if>
+  </div>
+  <div class="scroll" style="display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 8px">
+    <sc-for list="{{quick}}" as="q" hint-placeholder-count="4"><button class="btn qr" onClick="{{q.send}}">{{q.label}}</button></sc-for>
+  </div>
+  <form onSubmit="{{submitDraft}}" style="display: flex; gap: 8px; padding: 0 16px 8px; margin: 0">
+    <label for="chatInput" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Message your coach</label>
+    <input id="chatInput" class="field" placeholder="Message your coach" value="{{draft}}" onChange="{{onDraft}}" style="height: 46px; border-radius: 23px; font-size: 16px; font-weight: 500">
+    <button class="btn" type="submit" aria-label="Send" style="width: 46px; height: 46px; border-radius: 23px; background: var(--chipOn); color: var(--chipOnText); display: flex; align-items: center; justify-content: center; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg></button>
+  </form>
+</div>
+</sc-if>
+
+<!-- 12 QUIT DAY -->
+<sc-if value="{{s.quitday}}" hint-placeholder-val="{{false}}">
+<div class="scr calm" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg); color: var(--text)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center; justify-content: space-between">
+    <button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+    <span style="font-size: 15px; font-weight: 700; color: var(--muted); padding-right: 16px">Day 15 · Quit day</span>
+  </div>
+  <sc-if value="{{quitWrite}}" hint-placeholder-val="{{true}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; padding: 0 24px; min-height: 0">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px">
+      <h1 class="h1" style="font-size: 34px">Today you smoke your last cigarette.</h1>
+      <p class="body" style="font-size: 17px">Take your time with it. Notice it. When you're ready, write one sentence about why you're quitting.</p>
+      <div><label class="lbl" for="whyInput">Why I'm quitting</label><textarea id="whyInput" class="field" placeholder="I want to be the dad who runs with them, not watches." value="{{why}}" onChange="{{onWhy}}" style="height: 112px; font-size: 18px"></textarea></div>
+    </div>
+    <button class="btn primary {{quitCtaCls}}" onClick="{{quitDone}}">I'm done</button>
+  </div>
+  </sc-if>
+  <sc-if value="{{quitAfter}}" hint-placeholder-val="{{false}}">
+  <div class="fade" style="flex: 1; display: flex; flex-direction: column; padding: 0 24px">
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; text-align: center">
+      <div style="position: relative; width: 180px; height: 180px">
+        <div class="grow" style="position: absolute; inset: 0; border-radius: 90px; border: 2px solid rgba(232,96,60,.6)"></div>
+        <div class="grow pulse" style="position: absolute; inset: 40px; border-radius: 50px; background: rgba(244,238,230,.1)"></div>
+      </div>
+      <h1 class="h1" style="font-size: 34px">It's done.</h1>
+      <p class="body" style="font-size: 17px">From here, you're protecting what you've built. Your coach is with you all the way to day 42.</p>
+      <div class="soft" style="width: 100%; text-align: left"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Your reason</div><div style="font-size: 17px; font-weight: 700; line-height: 1.45; margin-top: 4px">{{whyShown}}</div></div>
+    </div>
+    <button class="btn primary" onClick="{{enterProtect}}">Start Protect</button>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- 14 PROGRESS -->
+<sc-if value="{{s.progress}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: 59px; background: var(--bg)">
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+    <div style="padding: 4px 0"><div style="font-size: 14px; font-weight: 700; color: var(--muted)">{{progSub}}</div><div style="font-size: 30px; font-weight: 800; letter-spacing: -.6px">Progress</div></div>
+    <div class="card" style="display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 17px; font-weight: 800">Your 42 days</span><span class="num" style="font-size: 14px; font-weight: 700; color: var(--muted)">Day {{progDay}}</span></div>
+      <div style="position: relative; height: 34px">
+        <div style="position: absolute; left: 0; right: 0; top: 12px; height: 10px; border-radius: 5px; background: var(--card2)"></div>
+        <div style="position: absolute; left: 0; top: 12px; height: 10px; border-radius: 5px; background: var(--text); width: {{progPct}}%"></div>
+        <div style="position: absolute; left: 33.3%; top: 6px; width: 3px; height: 22px; border-radius: 2px; background: #E8603C"></div>
+        <div style="position: absolute; right: -2px; top: 4px; width: 26px; height: 26px; border-radius: 13px; border: 2.5px solid var(--text); background: var(--card); display: flex; align-items: center; justify-content: center"><div style="width: 8px; height: 8px; border-radius: 4px; background: var(--text)"></div></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--muted)"><span>Day 1</span><span style="margin-left: 60px">Quit day · 15</span><span style="color: var(--text)">Day 42 goal</span></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <sc-for list="{{progStats}}" as="p" hint-placeholder-count="4"><div class="card" style="padding: 16px"><div class="num" style="font-size: 26px; font-weight: 800; letter-spacing: -.8px">{{p.v}}</div><div style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px; line-height: 1.35">{{p.l}}</div></div></sc-for>
+    </div>
+    <div class="card" style="display: flex; flex-direction: column; gap: 14px">
+      <div><div style="font-size: 17px; font-weight: 800">Cravings by time of day</div><div style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px">Lunch is your peak. Your coach checks in at 1:55 pm.</div></div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end; height: 150px">
+        <sc-for list="{{chart}}" as="c" hint-placeholder-count="6"><div style="display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: flex-end; height: 100%"><span class="num" style="font-size: 13px; font-weight: 800; color: var(--muted)">{{c.v}}</span><div style="width: 100%; height: {{c.h}}px; border-radius: 8px 8px 4px 4px; background: {{c.bg}}"></div></div></sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: -6px"><sc-for list="{{chart}}" as="c" hint-placeholder-count="6"><span style="font-size: 12px; font-weight: 700; color: var(--muted); text-align: center">{{c.l}}</span></sc-for></div>
+    </div>
+    <div class="card" style="display: flex; flex-direction: column; gap: 14px">
+      <div style="font-size: 17px; font-weight: 800">Top triggers</div>
+      <sc-for list="{{topTrig}}" as="t" hint-placeholder-count="5">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 700"><span>{{t.l}}</span><span class="num" style="color: var(--muted)">{{t.v}}%</span></div>
+        <div style="height: 8px; border-radius: 4px; background: var(--card2)"><div style="height: 100%; border-radius: 4px; background: var(--text); width: {{t.w}}%"></div></div>
+      </div>
+      </sc-for>
+    </div>
+    <button class="btn soft" onClick="{{toBet}}" style="display: flex; align-items: center; gap: 14px; text-align: left; width: 100%">
+      <div style="flex: 1"><div style="font-size: 13px; font-weight: 700; color: var(--muted)">Coming soon</div><div style="font-size: 16px; font-weight: 700; margin-top: 2px">Bet on yourself</div></div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg>
+    </button>
+  </div>
+</div>
+</sc-if>
+
+<!-- 15 BET -->
+<sc-if value="{{s.bet}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 24px 16px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; gap: 8px"><span style="font-size: 12px; font-weight: 800; letter-spacing: .5px; padding: 5px 10px; border-radius: 10px; border: 1.5px solid var(--line); color: var(--muted)">COMING SOON · V2</span><span style="font-size: 12px; font-weight: 800; letter-spacing: .5px; padding: 5px 10px; border-radius: 10px; background: var(--card2); color: var(--muted)">OPTIONAL</span></div>
+    <h1 class="h1">Bet on yourself.</h1>
+    <p class="body">Some people quit better with something on the line. This is for them. If that's not you, skip it. Your plan works the same either way.</p>
+    <div class="card" style="padding: 6px 18px">
+      <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line)"><div class="num" style="width: 28px; height: 28px; border-radius: 14px; background: var(--card2); font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">1</div><div style="font-size: 15px; line-height: 1.45; font-weight: 600">Put down an amount you'd mind losing, but can afford to.</div></div>
+      <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line)"><div class="num" style="width: 28px; height: 28px; border-radius: 14px; background: var(--card2); font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">2</div><div style="font-size: 15px; line-height: 1.45; font-weight: 600">On day 42, verify you're smoke-free with a quick breath test at a partner pharmacy.</div></div>
+      <div style="display: flex; gap: 14px; padding: 14px 0"><div class="num" style="width: 28px; height: 28px; border-radius: 14px; background: var(--card2); font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">3</div><div style="font-size: 15px; line-height: 1.45; font-weight: 600">Pass and you get every rupee back. Don't, and it goes to [partner cancer charity].</div></div>
+    </div>
+    <div style="font-size: 17px; font-weight: 800">How much?</div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px"><sc-for list="{{betOpts}}" as="b" hint-placeholder-count="3"><button class="btn int num {{b.cls}}" aria-pressed="{{b.pressed}}" onClick="{{b.pick}}" style="font-size: 18px">{{b.label}}</button></sc-for></div>
+    <p style="margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted)">A slip before day 42 doesn't cost you the bet. Only the day 42 test counts.</p>
+  </div>
+  <div style="padding: 8px 24px 0; display: flex; flex-direction: column; gap: 6px"><button class="btn primary" onClick="{{betNotify}}">{{betCta}}</button><button class="btn ghost" onClick="{{back}}">No thanks</button></div>
+</div>
+</sc-if>
+
+<!-- 16 SETTINGS -->
+<sc-if value="{{s.settings}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: 59px; background: var(--bg)">
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 24px; display: flex; flex-direction: column; gap: 12px">
+    <div style="font-size: 30px; font-weight: 800; letter-spacing: -.6px; padding: 4px 0">Profile</div>
+    <div class="card" style="display: flex; align-items: center; gap: 14px">
+      <div style="width: 52px; height: 52px; border-radius: 26px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800">R</div>
+      <div><div style="font-size: 18px; font-weight: 800">Rahul, 34</div><div style="font-size: 14px; font-weight: 600; color: var(--muted)">{{progSub}} · was {{cigs}} a day</div></div>
+    </div>
+    <div class="eyebrow" style="margin-top: 8px; padding-left: 4px">Check-ins</div>
+    <div class="card" style="padding: 0">
+      <div class="row"><span>Morning<span style="display: block; font-size: 14px; font-weight: 500; color: var(--muted)">8:00 am · with coffee</span></span><button class="btn sw {{swM}}" aria-label="Morning check-in" aria-pressed="{{swMP}}" onClick="{{toggleM}}"><span class="knob"></span></button></div>
+      <div class="row"><span>After lunch<span style="display: block; font-size: 14px; font-weight: 500; color: var(--muted)">1:55 pm</span></span><button class="btn sw {{swL}}" aria-label="After lunch check-in" aria-pressed="{{swLP}}" onClick="{{toggleL}}"><span class="knob"></span></button></div>
+      <div class="row"><span>Evening<span style="display: block; font-size: 14px; font-weight: 500; color: var(--muted)">6:30 pm · before your drive</span></span><button class="btn sw {{swE}}" aria-label="Evening check-in" aria-pressed="{{swEP}}" onClick="{{toggleE}}"><span class="knob"></span></button></div>
+    </div>
+    <div class="eyebrow" style="margin-top: 8px; padding-left: 4px">Support</div>
+    <div class="card" style="padding: 0">
+      <button class="btn row" onClick="{{toBuddy}}">Quit buddy<span class="val">{{buddyFirst}} · milestones</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg></button>
+      <button class="btn row" onClick="{{toMedsEdit}}">Medication<span class="val">{{medShort}}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg></button>
+      <button class="btn row" onClick="{{toBet}}">Bet on yourself<span class="val">Coming soon</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg></button>
+    </div>
+    <div class="eyebrow" style="margin-top: 8px; padding-left: 4px">Account</div>
+    <div class="card" style="padding: 0">
+      <button class="btn row" onClick="{{toPaywall}}">Subscription<span class="val">{{subLabel}}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted)"><path d="M9 6l6 6-6 6"></path></svg></button>
+      <button class="btn row" onClick="{{toPrivacy}}">Privacy and data<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted); margin-left: auto"><path d="M9 6l6 6-6 6"></path></svg></button>
+      <div class="row" style="gap: 16px"><span>Appearance</span><div class="seg" style="margin-left: auto; width: 170px"><button class="btn {{modeL}}" onClick="{{setLight}}">Light</button><button class="btn {{modeD}}" onClick="{{setDark}}">Dark</button></div></div>
+    </div>
+    <div class="soft" style="display: flex; gap: 12px; align-items: flex-start; margin-top: 8px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px; color: var(--muted)"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"></path></svg>
+      <div style="font-size: 14px; line-height: 1.5; color: var(--muted); font-weight: 600">This app does not replace medical advice. For anything about medication or your health, talk to a pharmacist or doctor.</div>
+    </div>
+    <button class="btn ghost" onClick="{{signOut}}" style="color: var(--muted)">Sign out</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- PRIVACY -->
+<sc-if value="{{s.privacy}}" hint-placeholder-val="{{false}}">
+<div class="scr" style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 59px 0 40px; background: var(--bg)">
+  <div style="padding: 0 8px; height: 48px; display: flex; align-items: center; gap: 4px"><button class="btn icon" aria-label="Back" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><span style="font-size: 17px; font-weight: 800">Privacy and data</span></div>
+  <div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 14px">
+    <div class="card"><div style="font-size: 17px; font-weight: 800">What we keep</div><div style="font-size: 15px; line-height: 1.5; color: var(--muted); margin-top: 6px">Your logs, cravings and coach chats. Only to make your coaching better.</div></div>
+    <div class="card"><div style="font-size: 17px; font-weight: 800">What we never do</div><div style="font-size: 15px; line-height: 1.5; color: var(--muted); margin-top: 6px">Sell your data, show you ads, or share anything with your employer or insurer.</div></div>
+    <div class="card"><div style="font-size: 17px; font-weight: 800">What your buddy sees</div><div style="font-size: 15px; line-height: 1.5; color: var(--muted); margin-top: 6px">Milestones only. Never logs, cravings, slips or chats.</div></div>
+  </div>
+  <div style="padding: 8px 24px 0; display: flex; flex-direction: column; gap: 8px"><button class="btn secondary" onClick="{{exportData}}">Download my data</button><button class="btn ghost" onClick="{{deleteData}}" style="color: var(--accentText)">Delete my account</button></div>
+</div>
+</sc-if>
+
+</div>
+
+<!-- CRAVING BAR -->
+<sc-if value="{{showCrave}}" hint-placeholder-val="{{false}}">
+<div style="padding: 10px 20px 10px; background: var(--bg); border-top: 1px solid var(--line)">
+  <button class="btn crave" onClick="{{openCraving}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 14c2.5 0 2.5-4 5-4s2.5 4 5 4 2.5-4 5-4 2.5 4 5 4"></path></svg>Craving</button>
+</div>
+</sc-if>
+
+<!-- TAB BAR -->
+<sc-if value="{{showTabs}}" hint-placeholder-val="{{false}}">
+<nav aria-label="Main" style="height: 84px; padding: 6px 12px 30px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--bg); border-top: 1px solid var(--line)">
+  <button class="btn tab" onClick="{{tabHome}}" style="color: {{tc.home}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</button>
+  <button class="btn tab" onClick="{{tabCoach}}" style="color: {{tc.coach}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Coach</button>
+  <button class="btn tab" onClick="{{tabProgress}}" style="color: {{tc.progress}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"></path></svg>Progress</button>
+  <button class="btn tab" onClick="{{tabSettings}}" style="color: {{tc.settings}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Profile</button>
+</nav>
+</sc-if>
+
+<!-- overlays -->
+<div style="position: absolute; top: 11px; left: 50%; margin-left: -62px; width: 124px; height: 36px; border-radius: 20px; background: #000000; z-index: 40; pointer-events: none"></div>
+<div class="ind {{indCls}}"></div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+<div class="toast" role="status" style="position: absolute; top: 60px; left: 16px; right: 16px; z-index: 35; padding: 14px 18px; border-radius: 18px; background: var(--chipOn); color: var(--chipOnText); font-size: 15px; font-weight: 700; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,.18)">{{toast}}</div>
+</sc-if>
+
+<sc-if value="{{notif}}" hint-placeholder-val="{{false}}">
+<button class="btn toast" onClick="{{openNotif}}" style="position: absolute; top: 54px; left: 10px; right: 10px; z-index: 36; padding: 14px; border-radius: 24px; background: var(--card); box-shadow: 0 16px 40px rgba(0,0,0,.22); display: flex; gap: 12px; align-items: flex-start; text-align: left; border: 1px solid var(--line)">
+  <div style="width: 40px; height: 40px; border-radius: 10px; background: #1F1D1B; display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="10" fill="none" stroke="#FAF7F2" stroke-width="2"></circle><circle cx="13" cy="13" r="4" fill="#E8603C"></circle></svg></div>
+  <div style="flex: 1"><div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--muted)"><span>UNLIT · COACH</span><span>now</span></div><div style="font-size: 15px; font-weight: 600; line-height: 1.4; margin-top: 3px; color: var(--text)">Lunch is usually a tough time for you. How's it going?</div></div>
+</button>
+</sc-if>
+
+</div>
+</div>
+
+<!-- DEMO CONTROLS -->
+<aside aria-label="Demo controls" style="width: 335px; flex: none; background: var(--panel); border-radius: 24px; padding: 22px; display: flex; flex-direction: column; gap: 18px; box-shadow: var(--shadow)">
+  <div><div style="font-size: 12px; font-weight: 800; letter-spacing: .6px; color: var(--muted)">DEMO CONTROLS</div><div style="font-size: 20px; font-weight: 800; margin-top: 4px">Unlit prototype</div><div style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 2px">Rahul, 34 · 12 a day · press Play to click through</div></div>
+  <div><div class="lbl">Phase</div><div class="seg"><button class="btn {{phP}}" onClick="{{demoPrepare}}">Prepare · day 6</button><button class="btn {{phR}}" onClick="{{demoProtect}}">Protect · day 11</button></div></div>
+  <button class="btn primary" onClick="{{demoNotif}}" style="height: 50px; font-size: 16px">Send coach check-in</button>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+    <div><div class="lbl">Appearance</div><div class="seg"><button class="btn {{modeL}}" onClick="{{setLight}}">Light</button><button class="btn {{modeD}}" onClick="{{setDark}}">Dark</button></div></div>
+    <div><div class="lbl">Exercise timer</div><div class="seg"><button class="btn {{fastOff}}" onClick="{{slowT}}">1x</button><button class="btn {{fastOn}}" onClick="{{fastT}}">10x</button></div></div>
+  </div>
+  <div>
+    <div class="lbl">Jump to screen</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+      <sc-for list="{{jumps}}" as="j" hint-placeholder-count="16"><button class="btn dk {{j.cls}}" onClick="{{j.go}}">{{j.label}}</button></sc-for>
+    </div>
+  </div>
+  <button class="btn ghost" onClick="{{resetDemo}}" style="color: var(--muted); font-size: 14px; min-height: 40px">Reset demo</button>
+</aside>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":880,"height":980}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.D = {
+      TRIG: ['coffee', 'after meals', 'stress', 'alcohol', 'driving', 'boredom', 'breaks at work', 'phone calls'],
+      ORDER: ['surf', 'unhook', 'values', 'breath', 'delay'],
+      EX: {
+        surf: { title: 'Urge surfing', short: 'Watch the urge rise and fall', dur: 180, why: 'Strong cravings peak and pass within minutes. This helps you watch one rise and fall without acting on it.', lines: [
+          'Notice the craving. Where do you feel it? Chest, throat, hands?',
+          "Don't fight it. Just watch it, like a wave out at sea.",
+          "Breathe in slowly. Let the wave rise. You're still here.",
+          "It may get stronger before it peaks. That's normal. Stay with it.",
+          'This is the top of the wave. Nothing to do but breathe.',
+          'Notice small changes. Tighter, looser, warmer, quieter.',
+          'The wave is starting to fall. It always does.',
+          "You're riding this one without smoking. Your brain is learning.",
+          'Let your shoulders drop. One last slow breath.'
+        ] },
+        unhook: { title: 'Unhook from the thought', short: 'See the thought as a thought', dur: 120, why: 'When your mind says just one, this puts a little space between you and the thought.', lines: [
+          "Notice the thought your mind is offering. Maybe: I need one.",
+          "Now say it differently: I'm having the thought that I need one.",
+          "Hear the difference? It's a thought, not an order.",
+          "Thank your mind. It's trying to help, the old way.",
+          "Let the thought stay if it wants. You don't have to obey it.",
+          "Bring your attention back to what's in front of you."
+        ] },
+        values: { title: 'What matters to me', short: 'Reconnect with your reason', dur: 120, why: 'Cravings shrink your world to the next cigarette. This widens it back out.', lines: [
+          'Bring your reason for quitting to mind. Picture it clearly.',
+          'Who or what is it about? See a face, or a place.',
+          'Notice the craving is here too. Both can be here at once.',
+          'Ask yourself: which one do I want to move toward right now?',
+          "You don't need to feel ready. Just choose the next minute.",
+          'Take one breath for the thing that matters.'
+        ] },
+        breath: { title: 'Slow breathing', short: 'In for 4, out for 6', dur: 120, why: 'A long, slow exhale tells your body it is safe. The craving loses some of its grip.', lines: [
+          'Follow the circle. In through your nose as it grows.',
+          'Out through your mouth, slower than you breathed in.',
+          'If your mind wanders to smoking, just come back to the circle.',
+          'Let your jaw soften. Drop your shoulders.',
+          'Each breath out is a little longer. No rush.',
+          'Notice how your body feels now compared to two minutes ago.'
+        ] },
+        delay: { title: '10-minute delay', short: 'Put it off, not forever', dur: 600, why: "You don't have to decide forever. Just not for the next 10 minutes. Most cravings fade before that.", lines: [
+          "You don't have to say no forever. Just not for 10 minutes.",
+          'Get up and change where you are. Another room, outside, anywhere.',
+          'Drink a glass of water, slowly.',
+          'Text someone. Anything. Keep your hands busy.',
+          'Check in with the craving. Is it the same, or a little smaller?',
+          'Keep going. The clock is on your side.',
+          "If it's still here at the end, you can choose again. With a clearer head.",
+          'Notice how much time has already passed.'
+        ] }
+      },
+      SLIP: [
+        { id: 'offered', label: 'Someone offered me one' },
+        { id: 'drinking', label: 'I was drinking' },
+        { id: 'stress', label: 'Stress hit hard' },
+        { id: 'meal', label: 'After a meal' },
+        { id: 'nrt', label: 'Ran out of patch or gum' },
+        { id: 'other', label: 'Something else' }
+      ],
+      PLANS: {
+        offered: ["Have your line ready: I'm off them for now, I'll come for the chai though.", 'Hold something else when the group goes down. Chai, gum, your phone.', 'Text Arjun before you head out with smokers.'],
+        drinking: ['Decide your drink limit before you go out.', 'Keep gum in your pocket for the first drink.', 'Step outside with a non-smoker, not the smokers.'],
+        stress: ['When stress spikes, open Craving before anything else.', 'Two minutes of slow breathing, right where you are.', 'Tell your coach what set it off, so it can warn you next time.'],
+        meal: ['Stand up and move within two minutes of finishing.', 'Brush your teeth or have a mint straight after.', 'Your coach will check in after lunch.'],
+        nrt: ['Put your patches next to your toothbrush tonight.', 'Keep gum in your bag, your desk and your car.', 'Ask your pharmacist how best to use what you have.'],
+        other: ['Write down what happened in one line.', 'Open Craving at the first sign next time.', 'Your coach will check in tonight.']
+      }
+    };
+    this.state = this.initial();
+  }
+
+  seedMsgs() {
+    return [
+      { from: 'coach', time: '1:55 pm', text: "Lunch is usually a tough time for you. How's it going?" },
+      { from: 'me', time: '1:58 pm', text: 'Just finished. The guys from my team are heading down for a smoke.' },
+      { from: 'coach', time: '1:58 pm', text: "That's a tough mix: food, a break and the people you usually smoke with. You can still go down with them. Want a line ready in case someone offers?" },
+      { from: 'me', time: '1:59 pm', text: 'Yes' },
+      { from: 'coach', time: '1:59 pm', text: "Try: I'm off them for a few weeks, I'll come for the chai though.\n\nShort, no debate. You stay in the group, the cigarette stays out." },
+      { from: 'me', time: '2:12 pm', text: 'Worked. But it was close. Can I put on an extra patch when it gets this bad?' },
+      { from: 'coach', time: '2:12 pm', safety: true, text: "I can't advise on doses or how to combine patches. A pharmacist can answer that in a couple of minutes, or your doctor.\n\nWhat I can help with is the craving itself. Want to try 3 minutes of urge surfing right now?" }
+    ];
+  }
+
+  initial() {
+    return {
+      mode: 'light', screen: 'welcome', stack: [], onboarded: false,
+      q: 0, cigs: 12, years: 14, trig: ['coffee', 'after meals', 'stress', 'breaks at work'], attempts: '1-2', reason: 'family',
+      med: null, buddyName: 'Arjun', buddyPhone: '98450 21734', plan: 'annual',
+      phase: 'prepare', toast: '', notif: false,
+      logTrig: 'coffee', logInt: 3, logNote: '', logs: 5, logFromCraving: false,
+      cv: 'intro', cvInt: 4, cvTrig: ['after meals'], ex: 'surf', elapsed: 0, running: false, tried: [], handled: 47,
+      slipStep: 'ask', slipWhy: 'offered',
+      msgs: this.seedMsgs(), typing: false, draft: '',
+      why: '', quitStep: 'write',
+      nM: true, nL: true, nE: true, fast: false, bet: 1000, betOn: false
+    };
+  }
+
+  componentDidMount() {
+    this.iv = setInterval(() => this.tick(), 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.iv); clearTimeout(this.tt); clearTimeout(this.nt); clearTimeout(this.rt);
+  }
+  componentDidUpdate() {
+    if (this.chatEl && this.state.screen === 'coach') {
+      const n = this.state.msgs.length + (this.state.typing ? 1 : 0);
+      if (n !== this.lastN) { this.lastN = n; this.chatEl.scrollTop = this.chatEl.scrollHeight; }
+    }
+  }
+  tick() {
+    const st = this.state;
+    if (!st.running || st.screen !== 'craving' || st.cv !== 'play') return;
+    const dur = this.D.EX[st.ex].dur;
+    const e = Math.min(dur, st.elapsed + (st.fast ? 10 : 1));
+    if (e >= dur) this.setState({ elapsed: e, running: false, cv: 'end' });
+    else this.setState({ elapsed: e });
+  }
+
+  go(screen, extra) { this.setState((s) => Object.assign({ stack: s.stack.concat([s.screen]), screen: screen }, extra || {})); }
+  replace(screen, extra) { this.setState(Object.assign({ screen: screen }, extra || {})); }
+  back() {
+    this.setState((s) => { const st = s.stack.slice(); const prev = st.pop() || (s.onboarded ? 'home' : 'welcome'); return { stack: st, screen: prev }; });
+  }
+  tab(screen) { this.setState({ screen: screen, stack: [] }); }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  cap(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+  fmt(n) { return n.toLocaleString('en-IN'); }
+  mmss(sec) { const m = Math.floor(sec / 60); const s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
+
+  openCraving(extra) {
+    this.go('craving', Object.assign({ cv: 'intro', elapsed: 0, running: false, tried: [] }, extra || {}));
+  }
+  startEx(id) {
+    this.setState((s) => ({ ex: id, elapsed: 0, running: true, cv: 'play', tried: s.tried.indexOf(id) >= 0 ? s.tried : s.tried.concat([id]) }));
+  }
+  suggested() {
+    const st = this.state;
+    if (st.cvInt >= 4) return 'surf';
+    if (st.cvTrig.indexOf('stress') >= 0) return 'breath';
+    if (st.cvInt === 3) return 'unhook';
+    return 'delay';
+  }
+  lenLabel(id) { const d = this.D.EX[id].dur; return (d / 60) + ' min'; }
+
+  replyFor(text) {
+    const t = text.toLowerCase();
+    if (/dose|dosage|mg|how many|how much|extra patch|two patch|2 patch|double|strength|combine/.test(t)) {
+      return { safety: true, text: "I can't give dosing advice, including how much or how often to use patches, gum or tablets. A pharmacist is the quickest person to ask, and your doctor can help too.\n\nI'm here for the craving side. How strong is it right now, 1 to 5?" };
+    }
+    if (/surf|craving|crave|urge|want one|need one/.test(t)) return { text: "Okay. Tap Craving below and I'll take you through it. Three minutes, and you won't be doing it alone." };
+    if (/slip|smoked|had one|had a/.test(t)) return { text: "Thanks for telling me. A slip isn't a restart, and your days still count. Want to work out what happened so next time goes differently?" };
+    if (/okay|ok|good|fine|better/.test(t)) return { text: "Good. Notice that: lunch came and went and you're still here. Next check-in is 6:30 pm, before your drive home." };
+    return { text: "I hear you. Tell me a bit more. What's happening around you right now?" };
+  }
+  send(text) {
+    if (!text || !text.trim()) return;
+    this.setState((s) => ({ msgs: s.msgs.concat([{ from: 'me', time: '2:14 pm', text: text.trim() }]), typing: true, draft: '' }));
+    clearTimeout(this.rt);
+    this.rt = setTimeout(() => {
+      const r = this.replyFor(text);
+      this.setState((s) => ({ typing: false, msgs: s.msgs.concat([{ from: 'coach', time: '2:14 pm', text: r.text, safety: !!r.safety }]) }));
+    }, 1500);
+  }
+
+  jump(screen, extra) {
+    const onboardingScreens = ['welcome', 'quiz', 'plan', 'meds', 'buddy', 'paywall'];
+    const isOb = onboardingScreens.indexOf(screen) >= 0;
+    const tabs = ['home', 'coach', 'progress', 'settings'];
+    let stack = [];
+    if (!isOb && tabs.indexOf(screen) < 0) stack = ['home'];
+    if (isOb && screen !== 'welcome') stack = ['welcome'];
+    this.setState(Object.assign({ screen: screen, stack: stack, onboarded: !isOb, notif: false }, extra || {}));
+  }
+
+  renderVals() {
+    const st = this.state;
+    const D = this.D;
+    const names = ['welcome', 'signin', 'quiz', 'plan', 'meds', 'buddy', 'paywall', 'home', 'log', 'craving', 'slip', 'coach', 'quitday', 'progress', 'bet', 'settings', 'privacy'];
+    const s = {}; names.forEach((n) => { s[n] = st.screen === n; });
+    const prep = st.phase === 'prepare';
+    const tabScreens = ['home', 'coach', 'progress', 'settings'];
+    const showTabs = tabScreens.indexOf(st.screen) >= 0;
+    const showCrave = ['home', 'coach', 'progress'].indexOf(st.screen) >= 0;
+    const tc = {}; tabScreens.forEach((n) => { tc[n] = st.screen === n ? 'var(--text)' : 'var(--muted)'; });
+
+    // quiz
+    const qBars = [0, 1, 2, 3, 4].map((i) => ({ bg: i <= st.q ? 'var(--text)' : 'var(--line)' }));
+    const q = { s0: st.q === 0, s1: st.q === 1, s2: st.q === 2, s3: st.q === 3, s4: st.q === 4 };
+    const monthly = this.fmt(st.cigs * 18 * 30);
+    const quizTrig = D.TRIG.map((t) => { const on = st.trig.indexOf(t) >= 0; return { label: this.cap(t), cls: on ? 'on' : '', pressed: on ? 'true' : 'false', pick: () => this.setState((x) => ({ trig: on ? x.trig.filter((y) => y !== t) : x.trig.concat([t]) })) }; });
+    const attemptOpts = [['0', 'This is my first time'], ['1-2', 'Once or twice'], ['3+', 'Three times or more']].map((o) => ({ label: o[1], cls: st.attempts === o[0] ? 'on' : '', pressed: st.attempts === o[0] ? 'true' : 'false', pick: () => this.setState({ attempts: o[0] }) }));
+    const REASONS = [['health', 'My health'], ['family', 'My family'], ['money', 'Money'], ['fitness', 'Fitness'], ['other', 'Something else']];
+    const reasonOpts = REASONS.map((o) => ({ label: o[1], cls: st.reason === o[0] ? 'on' : '', pressed: st.reason === o[0] ? 'true' : 'false', pick: () => this.setState({ reason: o[0] }) }));
+    const reasonLabel = { health: 'Health', family: 'Family', money: 'Money', fitness: 'Fitness', other: 'Your own' }[st.reason];
+    const topT = st.trig.slice(0, 3);
+    const planIntro = 'Built around your ' + st.cigs + ' a day' + (topT.length ? ' and your toughest moments: ' + topT.join(', ') + '.' : '.');
+    const saved42n = st.cigs * 28 * 18;
+
+    // meds
+    const MEDS = [['nrt', "I'll use nicotine replacement"], ['rx', "I'll ask my doctor about prescription options"], ['none', 'Not right now']];
+    const medOpts = MEDS.map((o) => ({ label: o[1], cls: st.med === o[0] ? 'on' : '', pressed: st.med === o[0] ? 'true' : 'false', pick: () => this.setState({ med: o[0] }) }));
+    const medShort = { nrt: 'Nicotine replacement', rx: 'Asking my doctor', none: 'Not right now' }[st.med] || 'Not chosen';
+
+    // log
+    const logTrig = D.TRIG.map((t) => ({ label: this.cap(t), cls: st.logTrig === t ? 'on' : '', pressed: st.logTrig === t ? 'true' : 'false', pick: () => this.setState({ logTrig: t }) }));
+    const logInts = [1, 2, 3, 4, 5].map((n) => ({ n: n, cls: st.logInt === n ? 'on' : '', pressed: st.logInt === n ? 'true' : 'false', pick: () => this.setState({ logInt: n }) }));
+
+    // craving
+    const cv = { intro: st.cv === 'intro', rate: st.cv === 'rate', suggest: st.cv === 'suggest', play: st.cv === 'play', end: st.cv === 'end', more: st.cv === 'more', passed: st.cv === 'passed' };
+    const cvInts = [1, 2, 3, 4, 5].map((n) => ({ n: n, cls: st.cvInt === n ? 'on' : '', pressed: st.cvInt === n ? 'true' : 'false', pick: () => this.setState({ cvInt: n }) }));
+    const cvTrig = D.TRIG.map((t) => { const on = st.cvTrig.indexOf(t) >= 0; return { label: this.cap(t), cls: on ? 'on' : '', pressed: on ? 'true' : 'false', pick: () => this.setState((x) => ({ cvTrig: on ? x.cvTrig.filter((y) => y !== t) : x.cvTrig.concat([t]) })) }; });
+    const sid = this.suggested();
+    const sug = { title: D.EX[sid].title, lower: D.EX[sid].title.toLowerCase(), why: D.EX[sid].why, len: this.lenLabel(sid), start: () => this.startEx(sid) };
+    const mk = (id) => ({ title: D.EX[id].title, short: D.EX[id].short, len: this.lenLabel(id), start: () => this.startEx(id) });
+    const others = D.ORDER.filter((id) => id !== sid).map(mk);
+    let moreList = D.ORDER.filter((id) => st.tried.indexOf(id) < 0).map(mk);
+    if (!moreList.length) moreList = D.ORDER.map(mk);
+    const ex = D.EX[st.ex];
+    const p = Math.min(1, st.elapsed / ex.dur);
+    let idx = Math.floor(st.elapsed / 20);
+    idx = st.ex === 'delay' ? idx % ex.lines.length : Math.min(ex.lines.length - 1, idx);
+    const lines = ex.lines.map((t, i) => ({ t: t, op: i === idx ? 1 : 0 }));
+    const amp = Math.sin(Math.PI * Math.min(1, p / 0.88));
+    const waveY = Math.round(230 - 170 * amp);
+    const phaseLabel = st.ex === 'surf' ? (p < 0.3 ? 'Rising' : (p < 0.6 ? 'Peaking' : 'Passing')) : (st.running ? 'Stay with it' : 'Paused');
+    const cvTitles = { intro: 'Craving', rate: 'Craving', suggest: 'Craving', play: ex.title, end: ex.title, more: 'Craving', passed: 'Craving' };
+    const spentSec = st.elapsed;
+    const spent = spentSec >= 60 ? (Math.round(spentSec / 60) + (Math.round(spentSec / 60) === 1 ? ' minute' : ' minutes')) : 'a moment';
+
+    // slip
+    const slipOpts = D.SLIP.map((o) => ({ label: o.label, cls: st.slipWhy === o.id ? 'on' : '', pressed: st.slipWhy === o.id ? 'true' : 'false', pick: () => this.setState({ slipWhy: o.id }) }));
+    const slipSteps = (D.PLANS[st.slipWhy] || D.PLANS.other).map((t, i) => ({ n: i + 1, t: t }));
+    const slipWhyLabel = (D.SLIP.filter((o) => o.id === st.slipWhy)[0] || D.SLIP[5]).label;
+
+    // chat
+    const msgs = st.msgs.map((m) => ({ text: m.text, time: m.time, safety: !!m.safety, align: m.from === 'me' ? 'flex-end' : 'flex-start', cls: m.from === 'me' ? 'me' : ('coach' + (m.safety ? ' safe' : '')) }));
+    const quick = [
+      { label: 'Start urge surfing', send: () => { this.openCraving({ cv: 'play', ex: 'surf', running: true, tried: ['surf'] }); } },
+      { label: "I'm doing okay", send: () => this.send("I'm doing okay") },
+      { label: 'How much gum can I chew?', send: () => this.send('How much gum can I chew in a day?') },
+      { label: 'I had one', send: () => this.send('I had one') }
+    ];
+
+    // progress
+    const chartV = [['6am', 8], ['9am', 4], ['12pm', 11], ['3pm', 5], ['6pm', 9], ['9pm', 3]];
+    const chart = chartV.map((c) => ({ l: c[0], v: c[1], h: Math.round(c[1] / 11 * 104), bg: c[1] === 11 ? '#E8603C' : 'var(--text)' }));
+    const topTrig = [['Coffee', 31], ['After meals', 24], ['Breaks at work', 19], ['Stress', 14], ['Driving', 12]].map((t) => ({ l: t[0], v: t[1], w: Math.round(t[1] / 31 * 100) }));
+    const notSmokedN = st.cigs * 11;
+    const savedNowN = notSmokedN * 18;
+    const progStats = prep
+      ? [{ v: '61', l: 'cigarettes logged so far' }, { v: '9', l: 'cravings ridden out' }, { v: '11', l: 'fewer than your usual this week' }, { v: '9', l: 'days until quit day' }]
+      : [{ v: '₹' + this.fmt(savedNowN), l: 'saved, about $' + Math.round(savedNowN / 88) }, { v: String(st.handled), l: 'cravings ridden out' }, { v: String(notSmokedN), l: 'cigarettes not smoked' }, { v: '1', l: 'slip logged, progress kept' }];
+    const progDay = prep ? 6 : 25;
+
+    // bet
+    const betOpts = [500, 1000, 2500].map((a) => ({ label: '₹' + this.fmt(a), cls: st.bet === a ? 'on' : '', pressed: st.bet === a ? 'true' : 'false', pick: () => this.setState({ bet: a }) }));
+
+    // demo jumps
+    const J = [
+      ['Welcome', 'welcome'], ['Onboarding', 'quiz', { q: 0 }], ['Your plan', 'plan'], ['Medication', 'meds'], ['Buddy', 'buddy'], ['Paywall', 'paywall'],
+      ['Home', 'home'], ['Log cigarette', 'log', { logFromCraving: false }], ['Craving', 'craving', { cv: 'intro', running: false, elapsed: 0, tried: [] }], ['Urge surfing', 'craving', { cv: 'play', ex: 'surf', running: true, elapsed: 0, tried: ['surf'] }],
+      ['Slip', 'slip', { slipStep: 'ask', phase: 'protect' }], ['Coach chat', 'coach'], ['Quit day', 'quitday', { quitStep: 'write' }], ['Progress', 'progress'], ['Bet on yourself', 'bet'], ['Settings', 'settings']
+    ];
+    const jumps = J.map((j) => {
+      const on = st.screen === j[1] && (j[0] !== 'Urge surfing' || st.cv === 'play') && (j[0] !== 'Craving' || st.cv !== 'play');
+      return { label: j[0], cls: on ? 'on' : '', go: () => this.jump(j[1], j[2]) };
+    });
+
+    const calmScreen = st.screen === 'craving' || st.screen === 'quitday';
+
+    return {
+      mode: st.mode, s: s, prep: prep, prot: !prep, showTabs: showTabs, showCrave: showCrave, tc: tc,
+      indCls: calmScreen ? 'lt' : '',
+      hasToast: !!st.toast, toast: st.toast, notif: st.notif,
+      back: () => this.back(),
+
+      // welcome / signin
+      startOnboarding: () => this.go('quiz', { q: 0, onboarded: false }),
+      toSignin: () => this.go('signin'),
+      signIn: () => { this.setState({ screen: 'home', stack: [], onboarded: true }); this.say('Welcome back, Rahul. Your plan is right where you left it.'); },
+
+      // quiz
+      qBars: qBars, q: q, qLabel: (st.q + 1) + ' of 5', cigs: st.cigs,
+      cigsNote: '₹' + monthly + ' a month at ₹18 each',
+      onCigs: (e) => this.setState({ cigs: parseInt(e.target.value, 10) || 1 }),
+      years: st.years, yearsNote: 'Since you were about ' + Math.max(10, 34 - st.years) + '.',
+      yearsDown: () => this.setState((x) => ({ years: Math.max(1, x.years - 1) })),
+      yearsUp: () => this.setState((x) => ({ years: Math.min(24, x.years + 1) })),
+      quizTrig: quizTrig, attemptOpts: attemptOpts, reasonOpts: reasonOpts,
+      quizBack: () => { if (st.q > 0) this.setState({ q: st.q - 1 }); else this.back(); },
+      quizNext: () => { if (st.q < 4) this.setState({ q: st.q + 1 }); else this.go('plan'); },
+      quizCta: st.q < 4 ? 'Continue' : 'See my plan',
+
+      // plan
+      planIntro: planIntro, quitDate: 'Thu, 19 Nov', day42Date: 'Wed, 16 Dec',
+      saved42: this.fmt(saved42n), saved42usd: Math.round(saved42n / 88),
+      toMeds: () => this.go('meds'),
+
+      // meds
+      medOpts: medOpts, medShort: medShort,
+      medCtaCls: st.med ? '' : 'off',
+      medCta: st.onboarded ? 'Save' : 'Continue',
+      medNext: () => { if (!st.med) return; if (st.onboarded) { this.back(); this.say('Saved. Your coach will factor this in.'); } else this.go('buddy'); },
+
+      // buddy
+      buddyName: st.buddyName, buddyPhone: st.buddyPhone, buddyFirst: (st.buddyName || 'Your buddy').split(' ')[0],
+      onBuddyName: (e) => this.setState({ buddyName: e.target.value }),
+      onBuddyPhone: (e) => this.setState({ buddyPhone: e.target.value }),
+      buddyCta: st.onboarded ? 'Save buddy' : 'Send invite',
+      buddySkipLabel: st.onboarded ? 'Remove buddy' : 'Skip for now',
+      buddyInvite: () => { const n = (st.buddyName || 'your buddy').split(' ')[0]; if (st.onboarded) { this.back(); this.say('Saved. ' + n + ' will get milestone updates.'); } else { this.go('paywall'); this.say('Invite sent to ' + n + '.'); } },
+      buddySkip: () => { if (st.onboarded) { this.setState({ buddyName: '' }); this.back(); this.say('Buddy removed. You can add one any time.'); } else this.go('paywall'); },
+
+      // paywall
+      benefits: ['Craving support any time, day or night', 'A coach that learns your triggers and checks in before them', 'The full 42-day ACT program, step by step', 'Milestone updates for your quit buddy'],
+      payA: st.plan === 'annual' ? 'on' : '', payM: st.plan === 'monthly' ? 'on' : '',
+      payAP: st.plan === 'annual' ? 'true' : 'false', payMP: st.plan === 'monthly' ? 'true' : 'false',
+      pickAnnual: () => this.setState({ plan: 'annual' }), pickMonthly: () => this.setState({ plan: 'monthly' }),
+      payFine: st.plan === 'annual' ? 'Free for 7 days, then $59.99 a year. Cancel anytime before the trial ends and you pay nothing.' : 'Free for 7 days, then $9.99 a month. Cancel anytime before the trial ends and you pay nothing.',
+      payCta: st.onboarded ? 'Keep this plan' : 'Start free trial',
+      startTrial: () => { if (st.onboarded) { this.back(); this.say('Plan updated.'); } else { this.setState({ screen: 'home', stack: [], onboarded: true, phase: 'prepare' }); this.say("You're in. Day 1 of 42 starts now."); } },
+      restore: () => this.say('No previous purchase found on this Apple ID.'),
+
+      // home
+      ringOffset: (527.8 * (1 - 6 / 14)).toFixed(1), logs: st.logs,
+      notSmoked: notSmokedN, savedNow: this.fmt(savedNowN), savedNowUsd: Math.round(savedNowN / 88),
+      toLog: () => this.go('log', { logFromCraving: false, logNote: '' }),
+      toQuitDay: () => this.go('quitday', { quitStep: 'write' }),
+      toSlip: () => this.go('slip', { slipStep: 'ask' }),
+
+      // log
+      logTrig: logTrig, logInts: logInts, logNote: st.logNote, logFromCraving: st.logFromCraving,
+      onLogNote: (e) => this.setState({ logNote: e.target.value }),
+      saveLog: () => { this.setState((x) => ({ logs: x.logs + 1, screen: 'home', stack: [], logNote: '', logFromCraving: false })); this.say('Logged. Every log teaches your coach your patterns.'); },
+
+      // craving
+      openCraving: () => this.openCraving(),
+      closeCraving: () => { this.setState({ running: false }); this.back(); },
+      cv: cv, cvTitle: cvTitles[st.cv], cvInts: cvInts, cvTrig: cvTrig, sug: sug, others: others, moreList: moreList,
+      cvToRate: () => this.setState({ cv: 'rate' }),
+      cvToSuggest: () => this.setState({ cv: 'suggest' }),
+      cvToCoach: () => { this.setState({ running: false }); this.replace('coach', { stack: [] }); },
+      exSurf: st.ex === 'surf', exBreath: st.ex === 'breath', exOther: st.ex !== 'surf' && st.ex !== 'breath', exValues: st.ex === 'values',
+      reasonLabel: reasonLabel,
+      remaining: this.mmss(Math.max(0, ex.dur - st.elapsed)), lines: lines, waveY: waveY, phaseLabel: phaseLabel,
+      breathCue: (st.elapsed % 10) < 4 ? 'Breathe in' : 'Breathe out',
+      exOffset: (628.3 * (1 - p)).toFixed(1),
+      pausedCls: st.cv === 'play' && !st.running ? 'paused' : '',
+      pauseLabel: st.running ? 'Pause' : 'Resume',
+      togglePause: () => this.setState((x) => ({ running: !x.running })),
+      exDone: () => this.setState({ running: false, cv: 'end' }),
+      spent: spent, handled: st.handled,
+      endPassed: () => this.setState((x) => ({ cv: 'passed', handled: x.handled + 1 })),
+      endStrong: () => this.setState({ cv: 'more' }),
+      endSmoked: () => { if (prep) this.replace('log', { logFromCraving: true, logTrig: st.cvTrig[0] || 'stress', logInt: st.cvInt }); else this.replace('slip', { slipStep: 'ask' }); },
+
+      // slip
+      slipAsk: st.slipStep === 'ask', slipPlan: st.slipStep === 'plan',
+      slipOpts: slipOpts, slipSteps: slipSteps, slipWhyLabel: slipWhyLabel,
+      slipBack: () => { if (st.slipStep === 'plan') this.setState({ slipStep: 'ask' }); else this.back(); },
+      slipToPlan: () => this.setState({ slipStep: 'plan' }),
+      saveSlipPlan: () => { this.setState({ screen: 'home', stack: [], slipStep: 'ask' }); this.say('Plan saved. Your progress is exactly where it was.'); },
+      slipToCoach: () => this.replace('coach', { stack: [] }),
+
+      // coach
+      msgs: msgs, typing: st.typing, quick: quick, draft: st.draft,
+      chatRef: (el) => { this.chatEl = el; if (el) el.scrollTop = el.scrollHeight; },
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      submitDraft: (e) => { if (e && e.preventDefault) e.preventDefault(); this.send(st.draft); },
+
+      // quit day
+      quitWrite: st.quitStep === 'write', quitAfter: st.quitStep === 'done',
+      why: st.why, onWhy: (e) => this.setState({ why: e.target.value }),
+      whyShown: st.why.trim() || 'I want to be the dad who runs with them, not watches.',
+      quitCtaCls: '',
+      quitDone: () => this.setState({ quitStep: 'done' }),
+      enterProtect: () => { this.setState({ phase: 'protect', screen: 'home', stack: [], quitStep: 'write' }); this.say('Protect mode is on. Your coach has your back.'); },
+
+      // progress
+      progSub: prep ? 'Prepare · day 6 of 42' : 'Protect · day 25 of 42',
+      progDay: progDay, progPct: Math.round(progDay / 42 * 1000) / 10,
+      progStats: progStats, chart: chart, topTrig: topTrig,
+      toBet: () => this.go('bet'),
+
+      // bet
+      betOpts: betOpts, betCta: st.betOn ? "You're on the list" : 'Notify me when it launches',
+      betNotify: () => { this.setState({ betOn: true }); this.say("We'll let you know when Bet on yourself is live."); },
+
+      // settings
+      swM: st.nM ? 'on' : '', swL: st.nL ? 'on' : '', swE: st.nE ? 'on' : '',
+      swMP: st.nM ? 'true' : 'false', swLP: st.nL ? 'true' : 'false', swEP: st.nE ? 'true' : 'false',
+      toggleM: () => this.setState((x) => ({ nM: !x.nM })), toggleL: () => this.setState((x) => ({ nL: !x.nL })), toggleE: () => this.setState((x) => ({ nE: !x.nE })),
+      toBuddy: () => this.go('buddy'), toMedsEdit: () => this.go('meds'), toPaywall: () => this.go('paywall'), toPrivacy: () => this.go('privacy'),
+      subLabel: st.plan === 'annual' ? 'Yearly · free until 12 Nov' : 'Monthly · free until 12 Nov',
+      modeL: st.mode === 'light' ? 'on' : '', modeD: st.mode === 'dark' ? 'on' : '',
+      setLight: () => this.setState({ mode: 'light' }), setDark: () => this.setState({ mode: 'dark' }),
+      signOut: () => this.setState({ screen: 'welcome', stack: [], onboarded: false }),
+      exportData: () => this.say("We'll email a copy of your data within 24 hours."),
+      deleteData: () => this.say('In the real app, this asks you to confirm first.'),
+
+      // tabs
+      tabHome: () => this.tab('home'), tabCoach: () => this.tab('coach'), tabProgress: () => this.tab('progress'), tabSettings: () => this.tab('settings'),
+
+      // notification
+      openNotif: () => { clearTimeout(this.nt); this.setState({ notif: false, screen: 'coach', stack: [], onboarded: true }); },
+
+      // demo
+      phP: prep ? 'on' : '', phR: prep ? '' : 'on',
+      demoPrepare: () => this.setState({ phase: 'prepare', screen: 'home', stack: [], onboarded: true }),
+      demoProtect: () => this.setState({ phase: 'protect', screen: 'home', stack: [], onboarded: true }),
+      demoNotif: () => { clearTimeout(this.nt); this.setState({ notif: true }); this.nt = setTimeout(() => this.setState({ notif: false }), 7000); },
+      fastOn: st.fast ? 'on' : '', fastOff: st.fast ? '' : 'on',
+      fastT: () => this.setState({ fast: true }), slowT: () => this.setState({ fast: false }),
+      jumps: jumps,
+      resetDemo: () => { clearTimeout(this.rt); this.setState(Object.assign(this.initial(), { mode: st.mode })); }
+    };
+  }
+}
+</script>
+</body>
+</html>
